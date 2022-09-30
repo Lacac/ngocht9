@@ -2,6 +2,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import {filterImageFromURL, deleteLocalFiles} from './util/util';
 // const { query, validationResult } = require('express-validator');
+import {Router,Request,Response} from 'express';
 
 (async () => {
 
@@ -30,7 +31,18 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
 
   /**************************************************************************** */
 
-  
+  app.get('/filteredimage',async (req: Request, res: Response) =>{
+    const image_url =req.query.image_url.toString();
+    if(!image_url){
+      res.status(400).send('Image url is required');
+    }
+
+    const filtred_image =await filterImageFromURL(image_url);
+
+    res.status(200).sendFile(filtred_image, ()=> {
+      deleteLocalFiles([filtred_image]);
+    });
+  });
 
 
   //! END @TODO1
